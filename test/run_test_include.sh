@@ -1,0 +1,1 @@
+PYTHONPATH=".;.." DJANGO_SETTINGS_MODULE=testprj django-admin runserver
