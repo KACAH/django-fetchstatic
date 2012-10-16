@@ -13,8 +13,6 @@ TEMPLATE_DIRS = (os.path.dirname(filepath),)
 INSTALLED_APPS = ("django.contrib.staticfiles", "fetchstatic")
 STATIC_URL = "/static/"
 
-urlpatterns = patterns("", 
-    (r"^$", direct_to_template, dict(
-        template="test.html",
-    )),
+urlpatterns = patterns("",
+    (r"^$", direct_to_template, dict(template="test.html")),
 )
