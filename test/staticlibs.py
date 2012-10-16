@@ -45,6 +45,7 @@ libraries = [jquery, jquery_ui, jquery_json, qtip, bootstrap]
 
 STATIC_LIBS = {
     "libraries": libraries,
-    "fetch_directory": "./fetched_static/",
-    "include_to_staticfiles_dirs": True,
+    "root_directory": "./static/",
+    "fetch_directory": "libs/",
+    "include_root_to_static": True,
 }

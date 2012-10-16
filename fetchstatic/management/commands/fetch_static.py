@@ -17,7 +17,10 @@ log = logging.getLogger(__name__)
 class Command(BaseCommand):
     help = "Download libraries from internet to static folder"
 
-    static_folder = settings.STATIC_LIBS["fetch_directory"]
+    static_folder = os.path.join(
+        settings.STATIC_LIBS["root_directory"],
+        settings.STATIC_LIBS["fetch_directory"]
+    )
     temp_folder = os.path.join(static_folder, "__temp")
 
     option_list = BaseCommand.option_list + (

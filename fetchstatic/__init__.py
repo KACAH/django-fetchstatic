@@ -10,11 +10,7 @@ if not "libraries" in settings.STATIC_LIBS:
     raise ImproperlyConfigured(
         "You must specify libraries option in settings.STATIC_LIBS")
 
-if not "fetch_directory" in settings.STATIC_LIBS:
-    raise ImproperlyConfigured(
-        "You must specify fetch_directory option in settings.STATIC_LIBS")
-
-if settings.STATIC_LIBS.get("include_to_staticfiles_dirs"):
-    fetch_dir = settings.STATIC_LIBS["fetch_directory"]
-    if not fetch_dir in settings.STATICFILES_DIRS:
-        settings.STATICFILES_DIRS = settings.STATICFILES_DIRS + (fetch_dir,)
+if settings.STATIC_LIBS.get("include_root_to_static"):
+    root_dir = settings.STATIC_LIBS["root_directory"]
+    if not root_dir in settings.STATICFILES_DIRS:
+        settings.STATICFILES_DIRS = settings.STATICFILES_DIRS + (root_dir,)

@@ -6,22 +6,32 @@ from django.conf import settings
 
 
 register = template.Library()
-STATIC_FOLDER = settings.STATIC_LIBS["fetch_directory"]
 
+ROOT_FOLDER = settings.STATIC_LIBS["root_directory"]
+STATIC_FOLDER = os.path.join(
+    ROOT_FOLDER,
+    settings.STATIC_LIBS["fetch_directory"]
+)
+
+def get_static_name(filename):
+    """Return filename relative to static URL"""
+    
+    filename = filename.replace(ROOT_FOLDER, "")
+    if filename.startswith(os.sep):
+        filename = filename[1:]
+    return os.path.join(settings.STATIC_URL, filename)
 
 def get_js(filename):
     """Return HTML JS include by filename"""
 
-    filename = filename.replace(STATIC_FOLDER, "")
     return "<script type='text/javascript' src='%s'></script>" \
-        % os.path.join(settings.STATIC_URL, filename)
+        % get_static_name(filename)
 
 def get_css(filename):
     """Return HTML CSS include by filename"""
 
-    filename = filename.replace(STATIC_FOLDER, "")
     return "<link rel='stylesheet' type='text/css' href='%s'/>" \
-        % os.path.join(settings.STATIC_URL, filename)
+        % get_static_name(filename)
 
 def include_library(lib_name):
     """Generate list of includes for directory"""
