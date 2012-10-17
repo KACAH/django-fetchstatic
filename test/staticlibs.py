@@ -41,11 +41,4 @@ qtip = {
     ]
 }
 
-libraries = [jquery, jquery_ui, jquery_json, qtip, bootstrap]
-
-STATIC_LIBS = {
-    "libraries": libraries,
-    "root_directory": "./static/",
-    "fetch_directory": "libs/",
-    "include_root_to_static": True,
-}
+STATIC_LIBS = [jquery, jquery_ui, jquery_json, qtip, bootstrap]

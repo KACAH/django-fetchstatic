@@ -17,18 +17,12 @@ log = logging.getLogger(__name__)
 class Command(BaseCommand):
     help = "Download libraries from internet to static folder"
 
-    static_folder = os.path.join(
-        settings.STATIC_LIBS["root_directory"],
-        settings.STATIC_LIBS["fetch_directory"]
-    )
-    temp_folder = os.path.join(static_folder, "__temp")
-
     option_list = BaseCommand.option_list + (
-        make_option("--force",
-            action="store_true",
-            dest="force",
-            default=False,
-            help="Overwrite existing files while downloading"),
+            make_option("-f", "--force",
+                action="store_true",
+                dest="force",
+                default=False,
+                help="Overwrite existing files while downloading"),
         )
 
     def download_file(self, url, dest):
@@ -194,15 +188,20 @@ class Command(BaseCommand):
             for _zip_params in lib["zips"]:
                 self.get_zip(_zip_params, _lib_path)
 
-    def handle(self, **options):
+    def handle(self, *args, **options):
         self.force = options["force"]
+
+        if not args:
+            raise ValueError("Please specify path for fetching")
+        self.static_folder = args[0]
+        self.temp_folder = os.path.join(self.static_folder, "__temp")
 
         if not os.path.exists(self.static_folder):
             os.makedirs(self.static_folder)
         os.makedirs(self.temp_folder)
 
         try:
-            for _lib in settings.STATIC_LIBS["libraries"]:
+            for _lib in settings.STATIC_LIBS:
                 self.get_library(_lib)
         finally:
             shutil.rmtree(self.temp_folder)
