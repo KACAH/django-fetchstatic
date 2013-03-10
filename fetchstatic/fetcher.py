@@ -112,11 +112,11 @@ class StaticFetcher(object):
         return _filename
 
     def paths_exist(self, paths, folder):
-        """Check and return if all paths vrom zip exist in folder"""
+        """Check and return if all paths from zip exist in folder"""
 
         for (_zip_path, _static_path) in paths:
             _path_to_check = os.path.join(folder, _static_path)
-            if (not os.path.exists(_path_to_check)):
+            if not os.path.exists(_path_to_check):
                 return False
         return True
 
@@ -127,7 +127,7 @@ class StaticFetcher(object):
         if (not filename.endswith(".js")) and (not filename.endswith(".css")):
             return False
 
-        #mininised file
+        #mininized file
         if filename.endswith(".min.js") or filename.endswith(".min.css"):
             return False
 
@@ -157,7 +157,7 @@ class StaticFetcher(object):
                     self.make_only_min_js_css(_dst)
             else:
                 if (not only_min) or (not file_is_not_min(_dst)):
-                    shutil.copyfile(_src, _dst)
+                    shutil.copy(_src, _dst)
 
 
     def get_zip(self, zip_params, folder):
