@@ -147,8 +147,6 @@ class StaticFetcher(object):
         for (_path, _dst) in zip_includes:
             _src = os.path.join(self.temp_dir, _path)
             _dst = os.path.join(folder, _dst)
-            if not os.path.exists(_dst):
-                os.makedirs(_dst)
 
             if os.path.isdir(_src):
                 copy_tree(_src, _dst)
@@ -157,8 +155,10 @@ class StaticFetcher(object):
                     self.make_only_min_js_css(_dst)
             else:
                 if (not only_min) or (not file_is_not_min(_dst)):
+                    _dst_dir, _dst_file = os.path.split(_dst)
+                    if not os.path.exists(_dst_dir):
+                        os.makedirs(_dst_dir)
                     shutil.copy(_src, _dst)
-
 
     def get_zip(self, zip_params, folder):
         """Download and extract zip file
