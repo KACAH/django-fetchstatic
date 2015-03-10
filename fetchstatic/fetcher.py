@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from distutils.dir_util import copy_tree
 import logging
 import os
@@ -9,6 +10,9 @@ import zipfile
 
 class StaticFetcher(object):
     """Static files fetcher into local directories"""
+
+    PRINT_PROGRESS_DELAY = timedelta(seconds=1)
+    READ_BLOCK_SIZE = 8192   # bytes
 
     def __init__(self, static_libs, static_dir, temp_dir):
         self.static_libs = static_libs
@@ -47,7 +51,6 @@ class StaticFetcher(object):
     def download_file(self, url, dest):
         """Download file from url with progressbar"""
 
-        BLOCK_SIZE = 8192
         UNKNOWN_SIZE = -1
 
         _response = urllib2.urlopen(url)
@@ -65,17 +68,27 @@ class StaticFetcher(object):
 
         _file = open(dest, "wb")
         _file_size_dl = 0
-        _buffer = _response.read(BLOCK_SIZE)
+        _dl_timer = self.PRINT_PROGRESS_DELAY
+        _prev_datetime = datetime.now()
+
+        _buffer = _response.read(self.READ_BLOCK_SIZE)
         while _buffer:
             _file_size_dl += len(_buffer)
             _file.write(_buffer)
-            _buffer = _response.read(BLOCK_SIZE)
 
+            _cur_datetime = datetime.now()
             if _file_size != UNKNOWN_SIZE:
                 _progress = _file_size_dl * 100. / _file_size
-                print r"File '%s': %10d bytes  [%3.2f%%]" \
-                    % (_base_filename, _file_size_dl, _progress)
-                sys.stdout.flush()
+                if _dl_timer >= self.PRINT_PROGRESS_DELAY:
+                    print r"File '%s': %10d bytes  [%3.2f%%]" \
+                        % (_base_filename, _file_size_dl, _progress)
+                    sys.stdout.flush()
+                    _dl_timer = timedelta()
+
+                _dl_timer += _cur_datetime - _prev_datetime
+
+            _prev_datetime = _cur_datetime
+            _buffer = _response.read(self.READ_BLOCK_SIZE)
 
         _file.close()
 
@@ -108,7 +121,7 @@ class StaticFetcher(object):
             return None
 
         shutil.copyfile(_download_filename, _filename)
-        self.log.info("'%s' succesfully downloaded", _base_filename)
+        self.log.info("'%s' successfully downloaded", _base_filename)
         return _filename
 
     def paths_exist(self, paths, folder):
@@ -177,9 +190,11 @@ class StaticFetcher(object):
         if not _zipname:
             return
 
+        self.log.info("Unpacking zip '%s'" % _zipname)
         _zip = zipfile.ZipFile(_zipname)
         _zip.extractall(self.temp_dir)
         _zip.close()
+        self.log.info("'%s' successfully unpacked" % _zipname)
 
         _only_min = zip_params.get("only_min")
         self.copy_zip(zip_params["unpack"], folder, _only_min)
