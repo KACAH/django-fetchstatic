@@ -53,7 +53,10 @@ class StaticFetcher(object):
 
         UNKNOWN_SIZE = -1
 
-        _response = urllib2.urlopen(url)
+        _request = urllib2.Request(
+            url, headers={"User-Agent" : "Fetchstatic tool"}
+        )
+        _response = urllib2.urlopen(_request)
         _base_filename = os.path.basename(url)
 
         _meta = _response.info()
@@ -80,15 +83,21 @@ class StaticFetcher(object):
             if _file_size != UNKNOWN_SIZE:
                 _progress = _file_size_dl * 100. / _file_size
                 if _dl_timer >= self.PRINT_PROGRESS_DELAY:
-                    print r"File '%s': %10d bytes  [%3.2f%%]" \
+                    self.log.info(
+                        r"File '%s': %10d bytes  [%3.2f%%]" \
                         % (_base_filename, _file_size_dl, _progress)
-                    sys.stdout.flush()
+                    )
                     _dl_timer = timedelta()
 
                 _dl_timer += _cur_datetime - _prev_datetime
 
             _prev_datetime = _cur_datetime
             _buffer = _response.read(self.READ_BLOCK_SIZE)
+
+        self.log.info(
+            r"File '%s': %10d bytes  [%3.2f%%]" \
+            % (_base_filename, _file_size_dl, 100)
+        )
 
         _file.close()
 
@@ -120,8 +129,8 @@ class StaticFetcher(object):
             self.log.error("%s, while downloading '%s'", _ex.reason, _url)
             return None
 
-        shutil.copyfile(_download_filename, _filename)
         self.log.info("'%s' successfully downloaded", _base_filename)
+        shutil.copyfile(_download_filename, _filename)
         return _filename
 
     def paths_exist(self, paths, folder):
@@ -228,7 +237,7 @@ def get_default_logger():
     """Default console logger for simple usage"""
 
     _formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        "%(asctime)s [%(levelname)s] %(message)s")
 
     _ch = logging.StreamHandler()
     _ch.setLevel(logging.DEBUG)
