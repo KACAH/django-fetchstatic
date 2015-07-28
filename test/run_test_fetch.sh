@@ -1,1 +1,1 @@
-PYTHONPATH=".;.." DJANGO_SETTINGS_MODULE=testprj django-admin fetch_static $@
+PYTHONPATH=.. python testprj.py fetch_static ./static/libs

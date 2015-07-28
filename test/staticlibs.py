@@ -17,28 +17,17 @@ jquery_ui = {
 
 jquery_json = {
     "name": "jQuery.json",
-    "files": [("http://jquery-json.googlecode.com/files/jquery.json-2.3.min.js", ".")],
+    "files": [("http://jquery-json.googlecode.com/files/jquery.json-2.4.min.js", ".")],
 }
 
-bootstrap = {
-    "name": "bootstrap",
+jquery_validate = {
+    "name": "jQuery.validate",
     "zips": [
-        {"url": "http://twitter.github.com/bootstrap/assets/bootstrap.zip",
+        {"url": "http://jqueryvalidation.org/files/jquery-validation-1.13.1.zip",
         "unpack": [
-            ("bootstrap/css", "css/"),
-            ("bootstrap/js", "js/"),
-            ("bootstrap/img", "img/")
-        ],
-        "only_min": True}
-    ]
+            ("dist/jquery.validate.min.js", "./jquery.validate.min.js"),
+        ]}
+    ],
 }
 
-qtip = {
-    "name": "jQuery.qtip",
-    "files": [
-        ("http://craigsworks.com/projects/qtip2/packages/latest/jquery.qtip.min.js", "."),
-        ("http://craigsworks.com/projects/qtip2/packages/latest/jquery.qtip.min.css", "."),
-    ]
-}
-
-STATIC_LIBS = [jquery, jquery_ui, jquery_json, qtip, bootstrap]
+STATIC_LIBS = [jquery, jquery_ui, jquery_json, jquery_validate]
