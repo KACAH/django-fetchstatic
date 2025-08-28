@@ -4,6 +4,7 @@ import os
 from django import template
 from django.conf import settings
 from django.contrib.staticfiles.finders import get_finders
+from django.utils.safestring import mark_safe
 
 
 register = template.Library()
@@ -61,4 +62,4 @@ def include_static(library_name=None):
     else:
         for _lib in settings.STATIC_LIBS:
             _includes.extend(include_library(_lib["name"], _static_files))
-    return "\n".join(_includes)
+    return mark_safe("\n".join(_includes))

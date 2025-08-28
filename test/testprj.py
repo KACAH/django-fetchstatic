@@ -3,7 +3,7 @@ import sys
 import logging
 
 from django.conf import settings
-from django.conf.urls.defaults import patterns
+from django.urls import path
 
 from staticlibs import STATIC_LIBS
 
@@ -18,10 +18,12 @@ def test_view(request, *args, **kwargs):
         errors running this file
 
     """
-    from django.shortcuts import render_to_response
-    return render_to_response("test.html")
+    from django.shortcuts import render
+    return render(request, "test.html", None)
 
-urlpatterns = patterns("", (r"^$", test_view),)
+urlpatterns = [
+    path("", test_view),
+]
 
 
 def setup_log():
@@ -44,8 +46,12 @@ def run():
     settings.configure(
         ROOT_URLCONF = os.path.basename(filepath),
         DEBUG = True, TEMPLATE_DEBUG = True,
-        TEMPLATE_DIRS = (os.path.dirname(filepath),),
+        TEMPLATES = [{
+            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "DIRS": [os.path.dirname(filepath)],
+        }],
         INSTALLED_APPS = ("django.contrib.staticfiles", "fetchstatic"),
+        SECRET_KEY = "+%i79h+o7@nlv9g(%*(qdcq89keb^4v-&$7r-sg@ic81&j6d)z",
         STATIC_URL = "/static/",
         STATIC_LIBS = STATIC_LIBS,
         STATICFILES_DIRS = ("./static/",),

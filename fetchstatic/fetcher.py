@@ -4,7 +4,7 @@ import logging
 import os
 import shutil
 import sys
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import zipfile
 
 
@@ -53,16 +53,15 @@ class StaticFetcher(object):
 
         UNKNOWN_SIZE = -1
 
-        _request = urllib2.Request(
+        _request = urllib.request.Request(
             url, headers={"User-Agent" : "Fetchstatic tool"}
         )
-        _response = urllib2.urlopen(_request)
+        _response = urllib.request.urlopen(_request)
         _base_filename = os.path.basename(url)
 
-        _meta = _response.info()
-        _con_length = _meta.getheaders("Content-Length")
+        _con_length = _response.getheader("Content-Length")
         if _con_length:
-            _file_size = int(_meta.getheaders("Content-Length")[0])
+            _file_size = int(_con_length[0])
             self.log.info(
                 "Downloading %s (%s bytes)", _base_filename, _file_size)
         else:
@@ -125,7 +124,7 @@ class StaticFetcher(object):
             os.path.join(self.temp_dir, _base_filename + ".part")
         try:
             self.download_file(_url, _download_filename)
-        except urllib2.URLError, _ex:
+        except urllib.error.URLError as _ex:
             self.log.error("%s, while downloading '%s'", _ex.reason, _url)
             return None
 
@@ -224,11 +223,11 @@ class StaticFetcher(object):
         """
         _lib_path = self.force_static_dir(lib["name"])
 
-        if lib.has_key("files"):
+        if "files" in lib:
             for _url in lib["files"]:
                 self.get_file(_url, _lib_path)
 
-        if lib.has_key("zips"):
+        if "zips" in lib:
             for _zip_params in lib["zips"]:
                 self.get_zip(_zip_params, _lib_path)
 
